@@ -1,15 +1,13 @@
 package storage
 
+import "github.com/vet-clinic-back/sso-service/internal/models"
+
 // Iterface to interact with user data
 type Auth interface {
-	// Get
-	// Check
-	// etc.
+	CreateVeterinarian(vet models.Veterinarian) (int, error)
+	CreateUser(user models.User) (int, error)
+	GetUser(username, password string) (models.User, error)
 }
-
-//
-// Other interfaces
-//
 
 type Storage interface {
 	Auth
