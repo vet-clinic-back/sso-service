@@ -16,20 +16,20 @@ func (h *Handler) signIn(c *gin.Context) {
 
 	if err := c.BindJSON(&input); err != nil {
 		log.Error("failed to bind json: ", err.Error())
-		h.newErrorResponse(c, http.StatusBadRequest, err.Error())
+		h.newErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
 
 	if err := utils.ValidateSignInDTO(input); err != nil {
 		log.Error("failed to validate input: ", err.Error())
-		h.newErrorResponse(c, http.StatusBadRequest, err.Error())
+		h.newErrorResponse(c, http.StatusBadRequest, "invalid input body. Username & password required")
 		return
 	}
 
 	token, err := h.service.Auth.CreateToken(input.Email, input.Password)
 	if err != nil {
 		log.Error("failed to create token: ", err.Error())
-		h.newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		h.newErrorResponse(c, http.StatusInternalServerError, "failed to create token")
 		return
 	}
 
