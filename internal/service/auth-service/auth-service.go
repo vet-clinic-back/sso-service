@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/vet-clinic-back/sso-service/internal/logging"
 	"github.com/vet-clinic-back/sso-service/internal/models"
 	"github.com/vet-clinic-back/sso-service/internal/storage"
 )
@@ -23,15 +24,20 @@ type tokenClaims struct {
 }
 
 type AuthService struct {
+	log     *logging.Logger
 	storage storage.Auth
 }
 
-func New(storage storage.Auth) *AuthService {
-	return &AuthService{storage: storage}
+func New(log *logging.Logger, storage storage.Auth) *AuthService {
+	return &AuthService{log: log, storage: storage}
 }
 
-func (s *AuthService) CreateToken(username, password string) (string, error) {
-	user, err := s.storage.GetUser(username, generatePasswordHash(password))
+//
+// TODO add logs
+//
+
+func (s *AuthService) CreateToken(email, password string) (string, error) {
+	user, err := s.storage.GetUser(email, generatePasswordHash(password))
 	if err != nil {
 		return "", err
 	}
@@ -41,7 +47,7 @@ func (s *AuthService) CreateToken(username, password string) (string, error) {
 			ExpiresAt: time.Now().Add(tokenTTL).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
-		user.Id,
+		user.ID,
 	})
 
 	return token.SignedString([]byte(signingKey))
@@ -50,11 +56,6 @@ func (s *AuthService) CreateToken(username, password string) (string, error) {
 func (s *AuthService) CreateUser(user models.User) (int, error) {
 	user.Password = generatePasswordHash(user.Password)
 	return s.storage.CreateUser(user)
-}
-
-func (s *AuthService) CreateVeterinarian(vet models.Veterinarian) (int, error) {
-	vet.Password = generatePasswordHash(vet.Password)
-	return s.storage.CreateVeterinarian(vet)
 }
 
 func (s *AuthService) ParseToken(token string) (int, error) {

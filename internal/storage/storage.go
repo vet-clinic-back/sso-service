@@ -1,14 +1,23 @@
 package storage
 
-import "github.com/vet-clinic-back/sso-service/internal/models"
+import (
+	"github.com/vet-clinic-back/sso-service/internal/logging"
+	"github.com/vet-clinic-back/sso-service/internal/models"
+	"github.com/vet-clinic-back/sso-service/internal/storage/postgres"
+)
 
 // Iterface to interact with user data
 type Auth interface {
-	CreateVeterinarian(vet models.Veterinarian) (int, error)
 	CreateUser(user models.User) (int, error)
 	GetUser(username, password string) (models.User, error)
 }
 
-type Storage interface {
+type Storage struct {
 	Auth
+}
+
+func New(log *logging.Logger) *Storage {
+	return &Storage{
+		Auth: postgres.New(log),
+	}
 }

@@ -1,34 +1,54 @@
 package handlers
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/vet-clinic-back/sso-service/internal/services"
-	"github.com/vet-clinic-back/sso-service/logger"
+	"github.com/vet-clinic-back/sso-service/internal/logging"
+	"github.com/vet-clinic-back/sso-service/internal/service"
 )
 
 type Handler struct {
-	service *services.Service
-	log     *logger.Logger
+	log     *logging.Logger
+	service *service.Service
 }
 
-func NewHandler(services *services.Service) *Handler {
-	return &Handler{service: services}
+func NewHandler(log *logging.Logger, service *service.Service) *Handler {
+	return &Handler{log: log, service: service}
 }
 
-func (h *Handler) newResponse(c *gin.Context, statusCode int, message string) {
-	h.log.Error(message)
-	c.AbortWithStatusJSON(statusCode, message)
-}
+/*
+
+- api
+  - v1
+	- vet
+	  - auth
+	- User
+	  - auth
+
+*/
 
 func (h *Handler) InitRoutes() *gin.Engine {
-	router := gin.New()
+	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * 3600,
+	}))
 
-	//router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	auth := router.Group("/auth")
+	api := router.Group("/api")
 	{
-		auth.POST("/sign-up")
-		auth.POST("/sign-in")
+		v1 := api.Group("/v1")
+		{
+			auth := v1.Group("/auth")
+			{
+				auth.POST("/sign-up", h.signUp)
+				auth.POST("/sign-in", h.signIn)
+			}
+		}
 	}
+
 	return router
 }
