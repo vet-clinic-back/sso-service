@@ -14,18 +14,21 @@ func (h *Handler) signIn(c *gin.Context) {
 
 	var input models.User
 
+	log.Debug("binding json")
 	if err := c.BindJSON(&input); err != nil {
 		log.Error("failed to bind json: ", err.Error())
 		h.newErrorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
 
+	log.Debug("validating input")
 	if err := utils.ValidateSignInDTO(input); err != nil {
 		log.Error("failed to validate input: ", err.Error())
-		h.newErrorResponse(c, http.StatusBadRequest, "invalid input body. Username & password required")
+		h.newErrorResponse(c, http.StatusBadRequest, "invalid input body. email & password required")
 		return
 	}
 
+	log.Debug("creating token")
 	token, err := h.service.Auth.CreateToken(input.Email, input.Password)
 	if err != nil {
 		log.Error("failed to create token: ", err.Error())

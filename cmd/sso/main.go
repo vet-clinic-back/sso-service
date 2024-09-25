@@ -34,7 +34,7 @@ func main() {
 	log.Info("initializing server")
 	server := server.NewServer()
 
-	log.Info("starting server")
+	log.Info("starting server on port 8080")
 	server.Run("8080", hander.InitRoutes()) // TODO use port from config
 
 	log.Info("graceful shutdown")

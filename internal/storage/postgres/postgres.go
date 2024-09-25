@@ -18,11 +18,17 @@ func New(log *logging.Logger) *Storage {
 }
 
 func (s *Storage) CreateUser(user models.User) (int, error) {
+	op := "Storage.GetUser"
+	log := s.log.WithField("op", op)
 	// TODO implement
+	log.Debug("imitation user creation")
 	return 0, nil
 }
 
 func (s *Storage) GetUser(username, password string) (models.User, error) {
+	op := "Storage.GetUser"
+	log := s.log.WithField("op", op)
+	log.Debug("imitation get user")
 	// TODO implement
 	return models.User{
 		ID:         0,

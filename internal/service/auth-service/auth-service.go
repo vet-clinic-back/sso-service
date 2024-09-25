@@ -1,9 +1,7 @@
 package authservice
 
 import (
-	"crypto/sha1"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -32,16 +30,17 @@ func New(log *logging.Logger, storage storage.Auth) *AuthService {
 	return &AuthService{log: log, storage: storage}
 }
 
-//
-// TODO add logs
-//
+func (s *AuthService) CreateToken(email, passwordHash string) (string, error) {
+	op := "AuthService.CreateToken"
+	log := s.log.WithField("op", op)
 
-func (s *AuthService) CreateToken(email, password string) (string, error) {
-	user, err := s.storage.GetUser(email, generatePasswordHash(password))
+	log.Debug("getting user")
+	user, err := s.storage.GetUser(email, passwordHash)
 	if err != nil {
 		return "", err
 	}
 
+	log.Debug("creating token")
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &tokenClaims{
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(tokenTTL).Unix(),
@@ -54,7 +53,6 @@ func (s *AuthService) CreateToken(email, password string) (string, error) {
 }
 
 func (s *AuthService) CreateUser(user models.User) (int, error) {
-	user.Password = generatePasswordHash(user.Password)
 	return s.storage.CreateUser(user)
 }
 
@@ -78,9 +76,9 @@ func (s *AuthService) ParseToken(token string) (int, error) {
 	return claims.UserId, nil
 }
 
-func generatePasswordHash(password string) string {
-	hash := sha1.New()
-	hash.Write([]byte(password))
+// func generatePasswordHash(password string) string {
+// 	hash := sha1.New()
+// 	hash.Write([]byte(password))
 
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
-}
+// 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+// }
