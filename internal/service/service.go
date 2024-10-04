@@ -8,9 +8,10 @@ import (
 )
 
 type Auth interface {
-	CreateUser(user models.User) (int, error)
-	CreateToken(email, password string) (string, error)
-	ParseToken(token string) (int, error)
+	CreateVet(user models.Vet) (int, error)
+	CreateOwner(user models.Owner) (int, error)
+	CreateToken(email, password string, isVet bool) (string, error)
+	ParseToken(token string) (authservice.Payload, error)
 }
 
 type Service struct {

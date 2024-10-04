@@ -38,15 +38,16 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		MaxAge:           12 * 3600,
 	}))
 
-	api := router.Group("/api")
+	api := router.Group("/auth")
 	{
 		v1 := api.Group("/v1")
 		{
-			auth := v1.Group("/auth")
+			signUp := v1.Group("/sign-up")
 			{
-				auth.POST("/sign-up", h.signUp)
-				auth.POST("/sign-in", h.signIn)
+				signUp.POST("/owner", h.signUpOwner)
+				signUp.POST("/vet", h.signUpVet)
 			}
+			v1.POST("/sign-in", h.signIn)
 		}
 	}
 

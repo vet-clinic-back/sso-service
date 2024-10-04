@@ -25,20 +25,35 @@ func (s *Storage) CreateUser(user models.User) (int, error) {
 	return 0, nil
 }
 
-func (s *Storage) GetUser(username, password string) (models.User, error) {
-	op := "Storage.GetUser"
-	log := s.log.WithField("op", op)
-	log.Debug("imitation get user")
-	// TODO implement
-	return models.User{
-		ID:         0,
-		Name:       "Test-name",
-		Surname:    "Test-surname",
-		Patronymic: "Test-patronymic",
-		Phone:      "Test-phone",
-		Email:      "Test-email",
-		Password:   "Test-password",
-		Role:       "Test-role",
-		Hospital:   "Test-hospital",
+func (s *Storage) CreateOwner(user models.Owner) (int, error) {
+	return 1, nil
+}
+func (s *Storage) CreateVet(user models.Vet) (int, error) {
+	return 1, nil
+}
+func (s *Storage) GetOwner(username, password string) (models.Owner, error) {
+
+	return models.Owner{
+		User: models.User{
+			ID:       1,
+			FullName: "admin",
+			Email:    "example@example.com",
+			Phone:    "12345",
+			Password: "pass12345",
+		},
+	}, nil
+}
+func (s *Storage) GetVet(username, password string) (models.Vet, error) {
+
+	return models.Vet{
+		User: models.User{
+			ID:       1,
+			FullName: "admin",
+			Email:    "example@example.com",
+			Phone:    "12345",
+			Password: "pass12345",
+		},
+		Position:     "vet",
+		ClinicNumber: "qwe1s",
 	}, nil
 }

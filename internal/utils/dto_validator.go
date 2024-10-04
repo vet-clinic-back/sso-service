@@ -8,12 +8,16 @@ import (
 
 var ErrInvalidInputBody = errors.New("invalid input body")
 
-func ValidateSignUpDTO(dto models.User) error {
-	// TODO implement
-	if dto.Name == "" || dto.Surname == "" || dto.Patronymic == "" {
+func ValidateSignUpVet(dto models.Vet) error {
+	if dto.FullName == "" || dto.Position == "" || dto.ClinicNumber == "" ||
+		dto.Email == "" || dto.Password == "" || dto.Phone == "" {
 		return ErrInvalidInputBody
 	}
-	if dto.Email == "" || dto.Password == "" || dto.Phone == "" {
+	return nil
+}
+
+func ValidateSignUpOwner(dto models.Owner) error {
+	if dto.FullName == "" || dto.Email == "" || dto.Password == "" || dto.Phone == "" {
 		return ErrInvalidInputBody
 	}
 	return nil

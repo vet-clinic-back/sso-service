@@ -29,11 +29,15 @@ func (h *Handler) signIn(c *gin.Context) {
 	}
 
 	log.Debug("creating token")
-	token, err := h.service.Auth.CreateToken(input.Email, input.Password)
+	token, err := h.service.Auth.CreateToken(input.Email, input.Password, true)
 	if err != nil {
-		log.Error("failed to create token: ", err.Error())
-		h.newErrorResponse(c, http.StatusInternalServerError, "failed to create token")
-		return
+		log.Warn("failed to create token. It may be not a vet: ", err.Error())
+		token, err = h.service.Auth.CreateToken(input.Email, input.Password, false)
+		if err != nil {
+			log.Error("failed to create token: ", err.Error())
+			h.newErrorResponse(c, http.StatusBadRequest, "failed to create token")
+			return
+		}
 	}
 
 	log.Info("successfully signed in")

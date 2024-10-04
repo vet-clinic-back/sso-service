@@ -8,8 +8,10 @@ import (
 
 // Iterface to interact with user data
 type Auth interface {
-	CreateUser(user models.User) (int, error)
-	GetUser(username, password string) (models.User, error)
+	CreateOwner(user models.Owner) (int, error)
+	CreateVet(user models.Vet) (int, error)
+	GetOwner(username, password string) (models.Owner, error)
+	GetVet(username, password string) (models.Vet, error)
 }
 
 type Storage struct {
