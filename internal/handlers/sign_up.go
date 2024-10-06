@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,15 +30,31 @@ func (h *Handler) signUpOwner(c *gin.Context) {
 		return
 	}
 
-	log.Debug("creating user")
-	_, err = h.service.Auth.CreateOwner(input)
-	if err != nil {
-		log.Error("failed to create new owner: ", err.Error())
-		h.newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	log.Debug("creating owner")
+	_, err = h.service.Auth.GetOwner(models.Owner{User: models.User{
+		Email: input.Email,
+		Phone: input.Phone,
+	}})
+	if err == nil { // if found owner with same email
+		log.Error("failed to create new owner. Owner with same email or phone already exists")
+		h.newErrorResponse(c, http.StatusConflict, "owner with same email or phone already exists")
 		return
 	}
 
-	token, err := h.service.Auth.CreateToken(input.Email, input.Password, false)
+	if !errors.Is(err, sql.ErrNoRows) {
+		log.Error(err)
+		h.newErrorResponse(c, http.StatusInternalServerError, "failed to find owner in db")
+		return
+	}
+
+	ownerID, err := h.service.Auth.CreateOwner(input)
+	if err != nil {
+		log.Error("failed to create new owner: ", err.Error())
+		h.newErrorResponse(c, http.StatusInternalServerError, "failed to create new owner")
+		return
+	}
+
+	token, err := h.service.Auth.CreateToken(ownerID, input.FullName, false)
 	if err != nil {
 		log.Error("failed to create token: ", err.Error())
 		h.newErrorResponse(c, http.StatusInternalServerError, "failed to create token")
@@ -67,15 +85,28 @@ func (h *Handler) signUpVet(c *gin.Context) {
 		return
 	}
 
-	log.Debug("creating user")
-	_, err = h.service.Auth.CreateVet(input)
+	log.Debug("creating vet")
+	_, err = h.service.Auth.GetVet(models.Vet{User: models.User{Email: input.Email}})
+	if err == nil { // if found vet with same email
+		log.Error("failed to create new vet. Vet with same email already exists")
+		h.newErrorResponse(c, http.StatusConflict, "vet with same email already exists")
+		return
+	}
+
+	if !errors.Is(err, sql.ErrNoRows) {
+		log.Error(err)
+		h.newErrorResponse(c, http.StatusInternalServerError, "failed to find vet in db")
+		return
+	}
+
+	vetID, err := h.service.Auth.CreateVet(input)
 	if err != nil {
-		log.Error("failed to create new owner: ", err.Error())
+		log.Error("failed to create new vet: ", err.Error())
 		h.newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	token, err := h.service.Auth.CreateToken(input.Email, input.Password, false)
+	token, err := h.service.Auth.CreateToken(vetID, input.FullName, false)
 	if err != nil {
 		log.Error("failed to create token: ", err.Error())
 		h.newErrorResponse(c, http.StatusInternalServerError, "failed to create token")

@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 
+	"github.com/vet-clinic-back/sso-service/internal/config"
 	"github.com/vet-clinic-back/sso-service/internal/handlers"
 	"github.com/vet-clinic-back/sso-service/internal/logging"
 	"github.com/vet-clinic-back/sso-service/internal/server"
@@ -19,11 +20,15 @@ func main() {
 	log := logging.NewLogger(isLocal, idDebug)
 	log.Info("logger initialized")
 
-	// TODO init config
 	log.Info("initializing config")
+	cfg, err := config.NewConfig()
+	if err != nil {
+		log.Fatal("Failed to load config. ", err)
+	}
 
 	log.Info("initializing storage")
-	storage := storage.New(log)
+	storage := storage.New(log, &cfg.Db)
+	defer storage.StorageProcess.Shutdown()
 
 	log.Info("initializing service")
 	service := service.New(log, storage)

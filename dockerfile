@@ -1,5 +1,5 @@
 # Используем базовый образ Go
-FROM golang:latest
+FROM golang::1.19-nanoserver
 
 WORKDIR /app
 

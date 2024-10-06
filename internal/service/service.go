@@ -8,9 +8,12 @@ import (
 )
 
 type Auth interface {
-	CreateVet(user models.Vet) (int, error)
-	CreateOwner(user models.Owner) (int, error)
-	CreateToken(email, password string, isVet bool) (string, error)
+	CreateVet(user models.Vet) (uint, error)
+	CreateOwner(user models.Owner) (uint, error)
+	GetOwner(owner models.Owner) (models.Owner, error)
+	GetVet(vet models.Vet) (models.Vet, error)
+	//
+	CreateToken(id uint, fullname string, isVet bool) (string, error)
 	ParseToken(token string) (authservice.Payload, error)
 }
 

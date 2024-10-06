@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,16 +30,41 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
+	var token string
+
 	log.Debug("creating token")
-	token, err := h.service.Auth.CreateToken(input.Email, input.Password, true)
-	if err != nil {
-		log.Warn("failed to create token. It may be not a vet: ", err.Error())
-		token, err = h.service.Auth.CreateToken(input.Email, input.Password, false)
+	owner, err := h.service.Auth.GetOwner(models.Owner{User: models.User{Email: input.Email, Password: input.Password}})
+	if err == nil { // if found owner with same email
+		token, err = h.service.Auth.CreateToken(owner.ID, owner.FullName, false)
 		if err != nil {
-			log.Error("failed to create token: ", err.Error())
-			h.newErrorResponse(c, http.StatusBadRequest, "failed to create token")
+			log.Error(err)
+			h.newErrorResponse(c, http.StatusUnauthorized, "failed to create token")
 			return
 		}
+	}
+
+	var vet models.Vet
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		log.Warn("failed to create token as owner: ", err.Error())
+		vet, err = h.service.Auth.GetVet(models.Vet{User: models.User{Email: input.Email, Password: input.Password}})
+		if err == nil { // if found vet with same email
+			token, err = h.service.Auth.CreateToken(vet.ID, vet.FullName, true)
+			if err != nil {
+				log.Error(err)
+				h.newErrorResponse(c, http.StatusUnauthorized, "failed to create token")
+				return
+			}
+		}
+	}
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Error("User not found ", err)
+			h.newErrorResponse(c, http.StatusUnauthorized, "user not found")
+			return
+		}
+		log.Error("failed to create token ", err)
+		h.newErrorResponse(c, http.StatusUnauthorized, "failed to creato token")
 	}
 
 	log.Info("successfully signed in")

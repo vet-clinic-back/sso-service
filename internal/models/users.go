@@ -14,8 +14,6 @@ type Owner struct {
 
 type Vet struct {
 	User
-	Position string `json:"position,omitempty"`
-	// DB VARCHAR(20),
-	// TODO make length validation
+	Position     string `json:"position,omitempty"`
 	ClinicNumber string `json:"clinic_number,omitempty"`
 }

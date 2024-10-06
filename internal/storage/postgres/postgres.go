@@ -1,59 +1,44 @@
 package postgres
 
 import (
+	"database/sql"
+	"fmt"
+
+	"github.com/Masterminds/squirrel"
+	_ "github.com/lib/pq"
+	"github.com/vet-clinic-back/sso-service/internal/config"
 	"github.com/vet-clinic-back/sso-service/internal/logging"
-	"github.com/vet-clinic-back/sso-service/internal/models"
 )
 
 type Storage struct {
-	log *logging.Logger
-	//db *sql.DB
+	log  *logging.Logger
+	db   *sql.DB
+	psql squirrel.StatementBuilderType
 }
 
-func New(log *logging.Logger) *Storage {
-	if false {
-		log.Fatalf("init postgres failed")
+func New(log *logging.Logger, cfg *config.DbConfig) *Storage {
+	psqlInfo := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.Name)
+
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		log.Fatal("init postgres failed ", err)
 	}
-	return &Storage{log: log}
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal("init postgres failed ", err)
+	}
+
+	psql := squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
+
+	return &Storage{
+		log:  log,
+		db:   db,
+		psql: psql,
+	}
 }
 
-func (s *Storage) CreateUser(user models.User) (int, error) {
-	op := "Storage.GetUser"
-	log := s.log.WithField("op", op)
-	// TODO implement
-	log.Debug("imitation user creation")
-	return 0, nil
-}
-
-func (s *Storage) CreateOwner(user models.Owner) (int, error) {
-	return 1, nil
-}
-func (s *Storage) CreateVet(user models.Vet) (int, error) {
-	return 1, nil
-}
-func (s *Storage) GetOwner(username, password string) (models.Owner, error) {
-
-	return models.Owner{
-		User: models.User{
-			ID:       1,
-			FullName: "admin",
-			Email:    "example@example.com",
-			Phone:    "12345",
-			Password: "pass12345",
-		},
-	}, nil
-}
-func (s *Storage) GetVet(username, password string) (models.Vet, error) {
-
-	return models.Vet{
-		User: models.User{
-			ID:       1,
-			FullName: "admin",
-			Email:    "example@example.com",
-			Phone:    "12345",
-			Password: "pass12345",
-		},
-		Position:     "vet",
-		ClinicNumber: "qwe1s",
-	}, nil
+func (s *Storage) Shutdown() error {
+	return s.db.Close()
 }

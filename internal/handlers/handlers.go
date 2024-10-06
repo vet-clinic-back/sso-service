@@ -28,7 +28,7 @@ func NewHandler(log *logging.Logger, service *service.Service) *Handler {
 */
 
 func (h *Handler) InitRoutes() *gin.Engine {
-	router := gin.Default()
+	router := gin.New()
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
