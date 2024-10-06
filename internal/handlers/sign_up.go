@@ -10,6 +10,18 @@ import (
 	"github.com/vet-clinic-back/sso-service/internal/utils"
 )
 
+// signUpOwner godoc
+// @Summary Sign up a new owner
+// @Description Sign up a new owner by providing their details.
+// @Tags owners
+// @Accept json
+// @Produce json
+// @Param input body models.Owner true "Owner input"
+// @Success 200 {object} models.SuccessDTO "Successfully signed up. Token returned"
+// @Failure 400 {object}  models.ErrorDTO "Invalid input body"
+// @Failure 409 {object} models.ErrorDTO "owner with same email already exists"
+// @Failure 500 {object}  models.ErrorDTO "Internal server error"
+// @Router /auth/v1/sign-up/owner [post]
 func (h *Handler) signUpOwner(c *gin.Context) {
 	op := "Handler.signUp"
 	log := h.log.WithField("op", op)
@@ -65,6 +77,18 @@ func (h *Handler) signUpOwner(c *gin.Context) {
 	c.JSON(http.StatusOK, models.SuccessDTO{Token: token}) // TODO
 }
 
+// signUpVet godoc
+// @Summary Sign up a new vet
+// @Description Sign up a new vet by providing their details.
+// @Tags vets
+// @Accept json
+// @Produce json
+// @Param input body models.Vet true "Vet input"
+// @Success 200 {object} models.SuccessDTO "Successfully signed up. Token returned"
+// @Failure 400 {object}  models.ErrorDTO "Invalid input body"
+// @Failure 409 {object} models.ErrorDTO "vet with same email already exists"
+// @Failure 500 {object}  models.ErrorDTO "Internal server error"
+// @Router /auth/v1/sign-up/vet [post]
 func (h *Handler) signUpVet(c *gin.Context) {
 	op := "Handler.signUp"
 	log := h.log.WithField("op", op)

@@ -3,6 +3,9 @@ package handlers
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "github.com/vet-clinic-back/sso-service/docs"
 	"github.com/vet-clinic-back/sso-service/internal/logging"
 	"github.com/vet-clinic-back/sso-service/internal/service"
 )
@@ -16,17 +19,6 @@ func NewHandler(log *logging.Logger, service *service.Service) *Handler {
 	return &Handler{log: log, service: service}
 }
 
-/*
-
-- api
-  - v1
-	- vet
-	  - auth
-	- User
-	  - auth
-
-*/
-
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 	router.Use(cors.New(cors.Config{
@@ -37,6 +29,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		AllowCredentials: true,
 		MaxAge:           12 * 3600,
 	}))
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := router.Group("/auth")
 	{

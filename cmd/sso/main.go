@@ -12,6 +12,15 @@ import (
 	"github.com/vet-clinic-back/sso-service/internal/storage"
 )
 
+//	@title			Vet clinic auth service
+//	@version		0.1
+//	@description	auth service
+
+//	@BasePath	/
+
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in							header
+// @name						Authorization
 func main() {
 	isLocal := flag.Bool("local", false, "is it local? can make logs pretty")
 	idDebug := flag.Bool("debug", false, "is it local? can make logs pretty")

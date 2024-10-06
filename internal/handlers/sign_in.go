@@ -10,6 +10,17 @@ import (
 	"github.com/vet-clinic-back/sso-service/internal/utils"
 )
 
+// @Summary Sign in
+// @Description Sign in user with email and password
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param input body models.User true "User credentials"
+// @Success 200 {object} models.SuccessDTO "Successfully signed in"
+// @Failure 400 {object}  models.ErrorDTO "Invalid input body"
+// @Failure 401 {object}  models.ErrorDTO "Unauthorized"
+// @Failure 500 {object}  models.ErrorDTO "Internal server error"
+// @Router /auth/v1/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
 	op := "Handler.signIn"
 	log := h.log.WithField("op", op)
@@ -64,7 +75,7 @@ func (h *Handler) signIn(c *gin.Context) {
 			return
 		}
 		log.Error("failed to create token ", err)
-		h.newErrorResponse(c, http.StatusUnauthorized, "failed to creato token")
+		h.newErrorResponse(c, http.StatusInternalServerError, "failed to creato token")
 	}
 
 	log.Info("successfully signed in")

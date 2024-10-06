@@ -1,5 +1,4 @@
-# Используем базовый образ Go
-FROM golang::1.19-nanoserver
+FROM golang:1.23.2-bookworm
 
 WORKDIR /app
 
