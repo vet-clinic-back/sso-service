@@ -1,13 +1,13 @@
 version: "3.8"
 
 services:
-  # app:
-  #   build: ./
-  #   volumes:
-  #     - .:/app
-  #   ports:
-  #     - 8080:8080
-  #   command: ["/main"]
+  app:
+    build: ./
+    volumes:
+      - .:/app
+    ports:
+      - 8080:8080
+    command: ["/main"]
   db:
     image: postgres:16-bullseye
     container_name: postgres
