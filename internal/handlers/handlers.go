@@ -32,9 +32,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	api := router.Group("/auth")
+	auth := router.Group("/auth")
 	{
-		v1 := api.Group("/v1")
+		v1 := auth.Group("/v1")
 		{
 			signUp := v1.Group("/sign-up")
 			{
@@ -42,6 +42,27 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				signUp.POST("/vet", h.signUpVet)
 			}
 			v1.POST("/sign-in", h.signIn)
+		}
+	}
+
+	info := router.Group("/info")
+	{
+		v1 := info.Group("/v1")
+		{
+			pet := v1.Group("/pet")
+			{
+				pet.POST("/create", h.createPet)
+				pet.GET("/get/{id}", h.getPet)
+				pet.PUT("/update/{id}", h.updatePet)
+				pet.DELETE("/delete/{id}", h.deletePet)
+			}
+			owner := v1.Group("/owner")
+			{
+				owner.GET("/get/{id}", h.getOwner)
+				owner.GET("/get", h.getAllOwners)
+				owner.PUT("/update/{id}", h.updateOwner)
+				owner.DELETE("/delete/{id}", h.deleteOwner)
+			}
 		}
 	}
 

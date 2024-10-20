@@ -15,12 +15,33 @@ type Auth interface {
 	GetVet(vet models.Vet) (models.Vet, error)
 }
 
+type Pet interface {
+	CreatePet(pet models.Pet) (uint, error)
+	GetPet(pet models.Pet) (models.Pet, error)
+	UpdatePet(pet models.Pet) (models.Pet, error)
+	DeletePet(id uint) error
+}
+
+type Owner interface {
+	CreateOwner(user models.Owner) (uint, error)
+	GetOwner(owner models.Owner) (models.Owner, error)
+	GetAllOwners() ([]models.Owner, error)
+	UpdateOwner(owner models.Owner) (models.Owner, error)
+	DeleteOwner(id uint) error
+}
+
+type Info interface {
+	Owner
+	Pet
+}
+
 type StorageProcess interface {
 	Shutdown() error
 }
 
 type Storage struct {
 	Auth
+	Info
 	StorageProcess
 }
 
@@ -28,6 +49,7 @@ func New(log *logging.Logger, cfg *config.DbConfig) *Storage {
 	pg := postgres.New(log, cfg)
 	return &Storage{
 		Auth:           pg,
+		Info:           pg,
 		StorageProcess: pg,
 	}
 }

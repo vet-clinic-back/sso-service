@@ -12,15 +12,15 @@ import (
 	"github.com/vet-clinic-back/sso-service/internal/storage"
 )
 
-//	@title			Vet clinic auth service
-//	@version		0.1
-//	@description	auth service
+//  @title      Vet clinic auth service
+//  @version    0.1
+//  @description  auth service
 
-//	@BasePath	/
+//  @BasePath  /
 
-// @securityDefinitions.apikey	ApiKeyAuth
-// @in							header
-// @name						Authorization
+// @securityDefinitions.apikey  ApiKeyAuth
+// @in              header
+// @name            Authorization
 func main() {
 	isLocal := flag.Bool("local", false, "is it local? can make logs pretty")
 	idDebug := flag.Bool("debug", false, "is it local? can make logs pretty")
@@ -40,7 +40,7 @@ func main() {
 	defer storage.StorageProcess.Shutdown()
 
 	log.Info("initializing service")
-	service := service.New(log, storage)
+	service := service.New(log, storage.Auth, storage.Info)
 
 	log.Info("initializing handler")
 	hander := handlers.NewHandler(log, service)

@@ -30,3 +30,19 @@ func ValidateSignInDTO(dto models.User) error {
 	}
 	return nil
 }
+
+func ValidateCreatingPetDTO(dto models.Pet) error {
+	if dto.AnimalType == "" || dto.Name == "" || dto.Gender == "" || dto.Age == 0 ||
+		dto.Weight == 0 || dto.Condition == "" || dto.Behavior == "" ||
+		dto.ResearchStatus == "" {
+		return ErrInvalidInputBody
+	}
+	return nil
+}
+
+func ValidateCreatingOwnerDTO(dto models.Owner) error {
+	if dto.FullName == "" || dto.Email == "" || dto.Phone == "" || dto.Password == "" {
+		return ErrInvalidInputBody
+	}
+	return nil
+}
