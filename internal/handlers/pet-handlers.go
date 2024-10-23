@@ -19,7 +19,7 @@ import (
 // @Success 201 {object} models.Pet "Successfully created pet"
 // @Failure 400 {object} models.ErrorDTO "Invalid input body"
 // @Failure 500 {object} models.ErrorDTO "Internal server error"
-// TODO// @Router /pets/v1/create [post]
+// TODO// @Router /pet/v1/create [post]
 func (h *Handler) createPet(c *gin.Context) {
 	op := "Handler.createPet"
 	log := h.log.WithField("op", op)
@@ -60,7 +60,7 @@ func (h *Handler) createPet(c *gin.Context) {
 // @Success 200 {object} models.Pet "Successfully retrieved pet"
 // @Failure 404 {object} models.ErrorDTO "Pet not found"
 // @Failure 500 {object} models.ErrorDTO "Internal server error"
-// @Router /pets/v1/{id} [get]
+// @Router /pet/v1/{id} [get]
 func (h *Handler) getPet(c *gin.Context) {
 	op := "Handler.getPet"
 	log := h.log.WithField("op", op)
@@ -90,6 +90,31 @@ func (h *Handler) getPet(c *gin.Context) {
 	c.JSON(http.StatusOK, pet)
 }
 
+// @Summary Get all pets
+// @Description Get all pets details
+// @Tags pets
+// @Produce json
+// @Param
+// @Success 200 {object} models.Pet "Successfully retrieved pets"
+// @Failure 404 {object} models.ErrorDTO "pet not found"
+// @Failure 500 {object} models.ErrorDTO "Internal server error"
+// TODO// @Router  /pet/ [get]
+func (h *Handler) getAllPets(c *gin.Context) {
+	op := "Handler.getAllPets"
+	log := h.log.WithField("op", op)
+
+	log.Debug("retrieving all pets")
+	pets, err := h.service.Info.GetAllPets()
+	if err != nil {
+		log.Error("failed to get all pets: ", err.Error())
+		h.newErrorResponse(c, http.StatusInternalServerError, "failed to get all pets")
+		return
+	}
+
+	log.Info("successfully retrieved all pets")
+	c.JSON(http.StatusOK, pets)
+}
+
 // @Summary Update Pet
 // @Description Update pet details by ID
 // @Tags pets
@@ -101,7 +126,7 @@ func (h *Handler) getPet(c *gin.Context) {
 // @Failure 400 {object} models.ErrorDTO "Invalid input body or pet ID"
 // @Failure 404 {object} models.ErrorDTO "Pet not found"
 // @Failure 500 {object} models.ErrorDTO "Internal server error"
-// @Router /pets/v1/{id} [put]
+// @Router /pet/v1/{id} [put]
 func (h *Handler) updatePet(c *gin.Context) {
 	op := "Handler.updatePet"
 	log := h.log.WithField("op", op)
@@ -150,7 +175,7 @@ func (h *Handler) updatePet(c *gin.Context) {
 // @Failure 400 {object} models.ErrorDTO "Invalid input body or pet ID"
 // @Failure 404 {object} models.ErrorDTO "Pet not found"
 // @Failure 500 {object} models.ErrorDTO "Internal server error"
-// @Router /pets/v1/{id} [delete]
+// @Router /pet/v1/{id} [delete]
 func (h *Handler) deletePet(c *gin.Context) {
 	op := "Handler.deletePet"
 	log := h.log.WithField("op", op)

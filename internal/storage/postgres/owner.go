@@ -90,16 +90,16 @@ func (s *Storage) GetAllOwners() ([]models.Owner, error) {
 func (s *Storage) UpdateOwner(owner models.Owner) (models.Owner, error) {
 	log := s.log.WithField("op", "Storage.Updateowner")
 
-	stmt := s.psql.Update(ownersTable)
+	stmt := s.psql.Update(ownersTable).Where(squirrel.Eq{"id": owner.ID})
 
 	if owner.Email != "" {
-		stmt = stmt.Where(squirrel.Eq{"email": owner.Email})
+		stmt = stmt.Set("email", owner.Email)
 	}
 	if owner.Phone != "" {
-		stmt = stmt.Where(squirrel.Eq{"phone": owner.Phone})
+		stmt = stmt.Set("phone", owner.Phone)
 	}
 	if owner.Password != "" {
-		stmt = stmt.Where(squirrel.Eq{"password_hash": owner.Password})
+		stmt = stmt.Set("password_hash", owner.Password)
 	}
 
 	stmt = stmt.Where(squirrel.Eq{"id": owner.ID})

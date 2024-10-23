@@ -18,6 +18,7 @@ type Auth interface {
 type Pet interface {
 	CreatePet(pet models.Pet) (uint, error)
 	GetPet(pet models.Pet) (models.Pet, error)
+	GetAllPets() ([]models.Pet, error)
 	UpdatePet(pet models.Pet) (models.Pet, error)
 	DeletePet(id uint) error
 }

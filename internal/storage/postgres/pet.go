@@ -68,6 +68,41 @@ func (s *Storage) GetPet(pet models.Pet) (models.Pet, error) {
 	return pet, nil
 }
 
+func (s *Storage) GetAllPets() ([]models.Pet, error) {
+	log := s.log.WithField("op", "Storage.GetAllPets")
+
+	stmt := s.psql.Select("id", "animal_type", "name", "gender", "age", "weight", "condition", "behavior", "research_status").From(petsTable)
+
+	query, args, err := stmt.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build select query: %w", err)
+	}
+
+	log.Debug("query: ", query, " args: ", args)
+
+	rows, err := s.db.Query(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute select query: %w", err)
+	}
+	defer rows.Close()
+
+	var pets []models.Pet
+	for rows.Next() {
+		var pet models.Pet
+		err := rows.Scan(&pet.ID, &pet.AnimalType, &pet.Name, &pet.Gender, &pet.Age, &pet.Weight, &pet.Condition, &pet.Behavior, &pet.ResearchStatus)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan pet: %w", err)
+		}
+		pets = append(pets, pet)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error occurred during row iteration: %w", err)
+	}
+
+	return pets, nil
+}
+
 func (s *Storage) UpdatePet(pet models.Pet) (models.Pet, error) {
 	log := s.log.WithField("op", "Storage.UpdatePet")
 

@@ -52,16 +52,18 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			pet := v1.Group("/pet")
 			{
 				pet.POST("/create", h.createPet)
-				pet.GET("/get/{id}", h.getPet)
-				pet.PUT("/update/{id}", h.updatePet)
-				pet.DELETE("/delete/{id}", h.deletePet)
+				pet.GET("/get", h.getAllPets)
+				pet.GET("/get/:id", h.getPet)
+				pet.PUT("/update/:id", h.updatePet)
+				pet.DELETE("/delete/:id", h.deletePet)
 			}
 			owner := v1.Group("/owner")
 			{
-				owner.GET("/get/{id}", h.getOwner)
+				owner.POST("/create", h.createOwner)
+				owner.GET("/get/:id", h.getOwner)
 				owner.GET("/get", h.getAllOwners)
-				owner.PUT("/update/{id}", h.updateOwner)
-				owner.DELETE("/delete/{id}", h.deleteOwner)
+				owner.PUT("/update/:id", h.updateOwner)
+				owner.DELETE("/delete/:id", h.deleteOwner)
 			}
 		}
 	}
