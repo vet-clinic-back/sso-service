@@ -62,6 +62,40 @@ info:
   title: Vet clinic auth service
   version: "0.1"
 paths:
+  /auth/v1/owner:
+    get:
+      description: Get all owners with pagination
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully found owners
+          schema:
+            items:
+              $ref: '#/definitions/models.Owner'
+            type: array
+        "404":
+          description: Not found in db
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all owners
+      tags:
+      - owners
   /auth/v1/sign-in:
     post:
       consumes:

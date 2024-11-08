@@ -12,6 +12,7 @@ type Auth interface {
 	CreateOwner(user models.Owner) (uint, error)
 	CreateVet(user models.Vet) (uint, error)
 	GetOwner(owner models.Owner) (models.Owner, error)
+	GetOwners(filter models.PaginationFilter) ([]models.Owner, error)
 	GetVet(vet models.Vet) (models.Vet, error)
 }
 

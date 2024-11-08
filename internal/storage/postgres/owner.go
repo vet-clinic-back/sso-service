@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -48,4 +49,44 @@ func (s *Storage) GetOwner(owner models.Owner) (models.Owner, error) {
 		return models.Owner{}, err
 	}
 	return owner, nil
+}
+
+func (s *Storage) GetOwners(filter models.PaginationFilter) ([]models.Owner, error) {
+	stmt := s.psql.Select("id", "full_name", "email", "phone").From(ownersTable)
+
+	if filter.Limit != nil {
+		stmt = stmt.Limit(uint64(*filter.Limit))
+	}
+	if filter.Offset != nil {
+		stmt = stmt.Offset(uint64(*filter.Offset))
+	}
+
+	sqlQuery, args, err := stmt.PlaceholderFormat(squirrel.Dollar).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := s.db.Query(sqlQuery, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			s.log.WithField("sql", sqlQuery).Error(err)
+		}
+	}(rows)
+
+	var owners []models.Owner
+	for rows.Next() {
+		var owner models.Owner
+		err := rows.Scan(
+			&owner.User.ID, &owner.User.FullName, &owner.User.Email, &owner.User.Phone)
+		if err != nil {
+			return []models.Owner{}, err
+		}
+		owners = append(owners, owner)
+	}
+
+	return owners, nil
 }

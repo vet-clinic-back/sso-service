@@ -41,7 +41,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				signUp.POST("/owner", h.signUpOwner)
 				signUp.POST("/vet", h.signUpVet)
 			}
+
 			v1.POST("/sign-in", h.signIn)
+			v1.GET("/owner", h.getOwners)
 		}
 	}
 
