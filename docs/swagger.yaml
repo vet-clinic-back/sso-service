@@ -1,0 +1,206 @@
+basePath: /
+definitions:
+  models.ErrorDTO:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Owner:
+    properties:
+      email:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: integer
+      password:
+        description: password hash
+        type: string
+      phone:
+        type: string
+    type: object
+  models.SuccessDTO:
+    properties:
+      token:
+        type: string
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: integer
+      password:
+        description: password hash
+        type: string
+      phone:
+        type: string
+    type: object
+  models.Vet:
+    properties:
+      clinic_number:
+        type: string
+      email:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: integer
+      password:
+        description: password hash
+        type: string
+      phone:
+        type: string
+      position:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: auth service
+  title: Vet clinic auth service
+  version: "0.1"
+paths:
+  /auth/v1/owner:
+    get:
+      description: Get all owners with pagination
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully found owners
+          schema:
+            items:
+              $ref: '#/definitions/models.Owner'
+            type: array
+        "404":
+          description: Not found in db
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all owners
+      tags:
+      - owners
+  /auth/v1/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Sign in user with email and password
+      parameters:
+      - description: User credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully signed in
+          schema:
+            $ref: '#/definitions/models.SuccessDTO'
+        "400":
+          description: Invalid input body
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+      summary: Sign in
+      tags:
+      - auth
+  /auth/v1/sign-up/owner:
+    post:
+      consumes:
+      - application/json
+      description: Sign up a new owner by providing their details.
+      parameters:
+      - description: Owner input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Owner'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully signed up. Token returned
+          schema:
+            $ref: '#/definitions/models.SuccessDTO'
+        "400":
+          description: Invalid input body
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+        "409":
+          description: owner with same email already exists
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+      summary: Sign up a new owner
+      tags:
+      - owners
+  /auth/v1/sign-up/vet:
+    post:
+      consumes:
+      - application/json
+      description: Sign up a new vet by providing their details.
+      parameters:
+      - description: Vet input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Vet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully signed up. Token returned
+          schema:
+            $ref: '#/definitions/models.SuccessDTO'
+        "400":
+          description: Invalid input body
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+        "409":
+          description: vet with same email already exists
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorDTO'
+      summary: Sign up a new vet
+      tags:
+      - vets
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
